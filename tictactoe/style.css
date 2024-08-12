@@ -1,0 +1,112 @@
+body {
+	font-family: 'Bowlby One SC', sans-serif;
+	font-weight: 100; /* Adjust font weight as needed */
+	background-color: #000; /* black background */
+	margin: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	color: #fff; /* white text color for better visibility on black background */
+  }
+  
+  #main {
+	text-align: center;
+  }
+  
+  h1 {
+	font-family: 'Bowlby One SC', sans-serif;
+	font-weight: 100; /* Adjust font weight as needed */
+	color: #ff4500; /* orangered */
+	margin-bottom: 5px;
+  }
+  
+  p {
+	font-family: 'Bowlby One SC', sans-serif;
+	font-weight: 100; /* Adjust font weight as needed */
+	margin-bottom: 10px;
+  }
+  
+  .ui {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+  }
+  
+  .row {
+	display: flex;
+  }
+  
+  .cell {
+	font-family: 'Bowlby One SC', sans-serif;
+	font-weight: 100; /* Adjust font weight as needed */
+	border: none; /* remove the default border */
+	width: 80px;
+	height: 80px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 24px;
+	text-align: center;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+  }
+  
+  .cell:hover {
+	background-color: #333; /* dark gray on hover for better visibility */
+  }
+  
+  .cell:active {
+	outline: none;
+  }
+  
+  /* 3*3 Grid */
+  #board .row:not(:last-child) {
+	border-bottom: 2px solid #888; /* thicker lines between rows, except the last row */
+  }
+  
+  #board .cell:not(:last-child) {
+	border-right: 2px solid #888; /* thicker lines between cells, except the last cell in each row */
+	box-sizing: border-box;
+  }
+  
+  /* Reset Button */
+  #but {
+	font-family: 'Bowlby One SC', sans-serif;
+	font-weight: 100; /* Adjust font weight as needed */
+	box-sizing: border-box;
+	width: 120px;
+	height: 40px;
+	border: 2px solid #1e90ff; /* dodgerblue */
+	margin: 10px 0;
+	border-radius: 8px;
+	background-color: #fff; /* white background */
+	color: #1e90ff; /* dodgerblue */
+	font-size: 16px;
+	cursor: pointer;
+	transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  #but:hover {
+	background-color: #1e90ff; /* dodgerblue */
+	color: #fff; /* white */
+  }
+  
+  /* Player turn space */
+  #print {
+	font-family: 'Bowlby One SC', sans-serif;
+	font-weight: 100; /* Adjust font weight as needed */
+	color: #1e90ff; /* dodgerblue */
+	font-size: 20px;
+	margin-bottom: 10px;
+  }
+  
+  /* Game Instruction Text */
+  #ins {
+	font-family: 'Bowlby One SC', sans-serif;
+	font-weight: 100; /* Adjust font weight as needed */
+	color: #1e90ff; /* dodgerblue */
+	font-size: 16px;
+  }
+  
+  

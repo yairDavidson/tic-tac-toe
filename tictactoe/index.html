@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Tic Tac Toe</title>
+</head>
+<body>
+  <div id="main">
+    <h1>Tic Tac Toe</h1>
+    <div id="print">Player X's turn</div>
+    <div class="ui" id="board">
+      <div class="row">
+        <div class="cell" id="b1" onclick="handleClick(1)"></div>
+        <div class="cell" id="b2" onclick="handleClick(2)"></div>
+        <div class="cell" id="b3" onclick="handleClick(3)"></div>
+      </div>
+      <div class="row">
+        <div class="cell" id="b4" onclick="handleClick(4)"></div>
+        <div class="cell" id="b5" onclick="handleClick(5)"></div>
+        <div class="cell" id="b6" onclick="handleClick(6)"></div>
+      </div>
+      <div class="row">
+        <div class="cell" id="b7" onclick="handleClick(7)"></div>
+        <div class="cell" id="b8" onclick="handleClick(8)"></div>
+        <div class="cell" id="b9" onclick="handleClick(9)"></div>
+      </div>
+    </div>
+    <button id="but" onclick="resetGame()">Reset</button>
+    <p id="ins">Click on a cell to make a move. Try to get three in a row!</p>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
