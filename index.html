@@ -1,63 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4743892892854260" crossorigin="anonymous"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoQwerty Minigames</title>
-    <style>
-        body {
-            font-family: 'Aharoni', sans-serif;
-            text-align: center;
-            background-color: #f2f2f2;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        .main-title {
-            font-family: 'Bowlby One SC', sans-serif;
-            font-size: 36px;
-            margin-top: 30px;
-            font-weight: 500;
-            color: #333;
-        }
-
-        .button {
-            display: inline-block;
-            width: 200px; /* Set fixed width for the buttons */
-            padding: 15px;
-            background-color: #007BFF;
-            font-weight: 500;
-            color: #fff;
-            text-decoration: none;
-            margin: 20px;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
-        }
-
-        .button:hover {
-            background-color: #0056b3;
-            font-weight: 400;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pro Tic Tac Toe - With Player List</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f0f0;
+    color: #222;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  body.dark {
+    background: #121212;
+    color: #f0f0f0;
+  }
+  h1 {
+    margin-bottom: 10px;
+  }
+  #playerSection {
+    margin-bottom: 15px;
+  }
+  #playerNameInput {
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  #joinBtn, #toggleDarkMode {
+    padding: 8px 12px;
+    margin-left: 8px;
+    font-size: 1rem;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  #joinBtn:hover, #toggleDarkMode:hover {
+    background-color: #0056b3;
+  }
+  #playerRole, #status {
+    font-weight: bold;
+    margin: 8px;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    gap: 10px;
+    margin: 20px 0;
+  }
+  .cell {
+    width: 100px;
+    height: 100px;
+    background-color: #fff;
+    border: 2px solid #444;
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 8px;
+  }
+  .cell.taken {
+    background-color: #ddd;
+    cursor: not-allowed;
+  }
+  #reset {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  #reset:hover {
+    background-color: #b02a37;
+  }
+  #playerList {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    width: 300px;
+    border-radius: 6px;
+  }
+</style>
 </head>
 <body>
-    <h1 class="main-title">GoQwerty Minigames</h1>
-    
-    <a class="button" href="https://yairdavidson.github.io/GoQwerty/snake">Snake</a>
-    
-    <a class="button" href="https://yairdavidson.github.io/GoQwerty/tictactoe">Tic Tac Toe</a>
-      
-    <a class="button" href="https://yairdavidson.github.io/GoQwerty/fourinarow">connect4</a>
 
-    <a class="button" href="https://yairdavidson.github.io/GoQwerty/2048">2048</a>
-    
-    <!-- Add more smaller titles and buttons as needed -->
+<h1>Tic Tac Toe Online</h1>
 
+<div id="playerSection">
+  <input type="text" id="playerNameInput" placeholder="Enter your name" />
+  <button id="joinBtn">Join Game</button>
+  <button id="toggleDarkMode">Dark Mode</button>
+</div>
+
+<div id="playerRole"></div>
+<div id="status">Waiting to join...</div>
+<div class="board" id="board"></div>
+<button id="reset">Reset Game</button>
+
+<div id="playerList">
+  <strong>Online Players:</strong>
+  <ul id="playersUl"></ul>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const SUPABASE_URL = 'https://tbmbktcllfqzqtmublqr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRibWJrdGNsbGZxenF0bXVibHFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0ODA0OTMsImV4cCI6MjA2ODA1NjQ5M30.xkEKRXwcbieIaLTvawaQFkRRXffPQn2yjHAIZXapvj4';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const GAME_ID = 'default_game';
+let playerName = null;
+let playerRole = null;
+let board = Array(9).fill(null);
+let currentTurn = 'X';
+let gameStatus = 'waiting';
+
+const boardEl = document.getElementById('board');
+const statusEl = document.getElementById('status');
+const resetBtn = document.getElementById('reset');
+const playerRoleEl = document.getElementById('playerRole');
+const playersUl = document.getElementById('playersUl');
+const toggleDarkMode = document.getElementById('toggleDarkMode');
+
+toggleDarkMode.onclick = () => {
+  document.body.classList.toggle('dark');
+};
+
+async function joinPlayerList() {
+  await supabase.from('players').upsert({ name: playerName, last_seen: new Date().toISOString() });
+}
+
+async function removeFromPlayerList() {
+  await supabase.from('players').delete().eq('name', playerName);
+}
+
+async function updatePlayerList() {
+  const now = new Date();
+  const cutoff = new Date(now.getTime() - 30000).toISOString();
+  await supabase.from('players').delete().lt('last_seen', cutoff);
+  const { data } = await supabase.from('players').select('*');
+  playersUl.innerHTML = '';
+  data.forEach(p => {
+    const li = document.createElement('li');
+    li.textContent = p.name;
+    playersUl.appendChild(li);
+  });
+}
+
+function renderBoard() {
+  boardEl.innerHTML = '';
+  board.forEach((val, idx) => {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    if (val) cell.classList.add('taken');
+    cell.textContent = val || '';
+    cell.onclick = () => handleMove(idx);
+    boardEl.appendChild(cell);
+  });
+}
+
+function updateStatus() {
+  if (!playerRole) {
+    statusEl.textContent = 'Spectating';
+    playerRoleEl.textContent = '';
+    return;
+  }
+  playerRoleEl.textContent = `You are ${playerRole}`;
+  if (gameStatus === 'waiting') {
+    statusEl.textContent = 'Waiting for opponent...';
+  } else if (gameStatus.includes('Wins') || gameStatus === 'Draw') {
+    statusEl.textContent = gameStatus;
+  } else {
+    statusEl.textContent = currentTurn === playerRole ? 'Your turn' : 'Opponent\'s turn';
+  }
+}
+
+function checkWinner(b) {
+  const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for (const [a,b1,c] of wins) {
+    if (b[a] && b[a] === b[b1] && b[a] === b[c]) return b[a];
+  }
+  return b.includes(null) ? null : 'Draw';
+}
+
+async function handleMove(i) {
+  if (!playerRole || board[i] || currentTurn !== playerRole || gameStatus !== 'playing') return;
+  board[i] = playerRole;
+  const winner = checkWinner(board);
+  gameStatus = winner ? (winner === 'Draw' ? 'Draw' : `${winner} Wins`) : 'playing';
+  currentTurn = winner ? currentTurn : (currentTurn === 'X' ? 'O' : 'X');
+  await supabase.from('games').update({ board, current_turn: currentTurn, status: gameStatus }).eq('id', GAME_ID);
+}
+
+resetBtn.onclick = async () => {
+  await supabase.from('games').update({
+    board: Array(9).fill(null),
+    current_turn: 'X',
+    status: 'waiting',
+    player_x: null,
+    player_o: null
+  }).eq('id', GAME_ID);
+
+  const { data: allPlayers } = await supabase.from('players').select('name');
+  const { data: game } = await supabase.from('games').select('player_x, player_o').eq('id', GAME_ID).single();
+
+  const validNames = [game?.player_x, game?.player_o].filter(Boolean);
+  const namesToDelete = allPlayers.filter(p => !validNames.includes(p.name));
+
+  for (const player of namesToDelete) {
+    await supabase.from('players').delete().eq('name', player.name);
+  }
+
+  location.reload();
+};
+
+async function initGame() {
+  const { data: game } = await supabase.from('games').select('*').eq('id', GAME_ID).single();
+  if (!game) {
+    await supabase.from('games').insert({
+      id: GAME_ID,
+      board: Array(9).fill(null),
+      current_turn: 'X',
+      status: 'waiting',
+      player_x: playerName,
+      player_o: null
+    });
+    playerRole = 'X';
+  } else {
+    board = game.board;
+    currentTurn = game.current_turn;
+    gameStatus = game.status;
+    if (!game.player_x) {
+      await supabase.from('games').update({ player_x: playerName }).eq('id', GAME_ID);
+      playerRole = 'X';
+    } else if (!game.player_o && game.player_x !== playerName) {
+      await supabase.from('games').update({ player_o: playerName, status: 'playing' }).eq('id', GAME_ID);
+      playerRole = 'O';
+    } else if (playerName === game.player_x) {
+      playerRole = 'X';
+    } else if (playerName === game.player_o) {
+      playerRole = 'O';
+    }
+  }
+  renderBoard();
+  updateStatus();
+}
+
+supabase.channel('game_sync')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'games' }, async () => {
+    const { data: newGame } = await supabase.from('games').select('*').eq('id', GAME_ID).single();
+    board = newGame.board;
+    currentTurn = newGame.current_turn;
+    gameStatus = newGame.status;
+    renderBoard();
+    updateStatus();
+  })
+  .subscribe();
+
+joinBtn.onclick = async () => {
+  playerName = playerNameInput.value.trim();
+  if (!playerName) return alert('Enter name');
+  document.getElementById('playerSection').style.display = 'none';
+  await joinPlayerList();
+  await initGame();
+};
+
+window.addEventListener('beforeunload', removeFromPlayerList);
+
+setInterval(joinPlayerList, 5000);
+setInterval(updatePlayerList, 3000);
+</script>
 </body>
 </html>
